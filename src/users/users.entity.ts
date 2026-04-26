@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { RefreshToken } from '../auth/refresh-token.entity';
 
-@Entity()
+@Entity('users')
 export class Users {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,4 +28,6 @@ export class Users {
   created_at: Date;
   @UpdateDateColumn()
   updated_at: Date;
+  @OneToMany(() => RefreshToken, (token) => token.user)
+  refreshTokens: RefreshToken[];
 }
