@@ -16,9 +16,12 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetUsersQueryDto } from './dtos/get-users-query.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { Serialize } from '../interceptors/serialize.interceptor';
+import { User } from './dtos/user.dto';
 
 @Controller('users')
 @UseGuards(JwtGuard)
+@Serialize(User)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
