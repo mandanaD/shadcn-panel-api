@@ -11,14 +11,14 @@ import {
 import { UsersService } from './users.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Users } from './users.entity';
-import { JwtGuard } from '../auth/jwt.guard';
+import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetUsersQueryDto } from './dtos/get-users-query.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
-import { Serialize } from '../interceptors/serialize.interceptor';
+import { Serialize } from '../../interceptors/serialize.interceptor';
 import { User } from './dtos/user.dto';
-import { ApiResponse } from '../decorator/api-response.decorator';
+import { ApiResponse } from '../../decorator/api-response.decorator';
 
 @Controller('users')
 @UseGuards(JwtGuard)

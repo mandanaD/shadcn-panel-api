@@ -169,6 +169,6 @@ export class AuthService {
       ...token,
       revoked: true,
     });
-    return { message: 'Logged out' };
+    return null;
   }
 }

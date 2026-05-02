@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from './users/users.entity';
+import { Users } from './modules/users/users.entity';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { TicketController } from './modules/ticket/ticket.controller';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { Users } from './users/users.entity';
       password: 'postgres',
       autoLoadEntities: true,
     }),
+    TicketModule,
   ],
+  controllers: [TicketController],
 })
 export class AppModule {}
