@@ -4,7 +4,6 @@ import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './modules/users/users.entity';
 import { TicketModule } from './modules/ticket/ticket.module';
-import { TicketController } from './modules/ticket/ticket.controller';
 
 @Module({
   imports: [
@@ -23,6 +22,5 @@ import { TicketController } from './modules/ticket/ticket.controller';
     }),
     TicketModule,
   ],
-  controllers: [TicketController],
 })
 export class AppModule {}
