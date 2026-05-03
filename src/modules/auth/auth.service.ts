@@ -46,7 +46,7 @@ export class AuthService {
 
     await this.authRepo.save({
       id: tokenId,
-      user,
+      created_by: user,
       token: hashed,
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
@@ -128,14 +128,14 @@ export class AuthService {
       where: {
         id: decodeToken.token_id,
       },
-      relations: ['user'],
+      relations: ['created_by'],
     });
 
     if (!token) {
       throw new BadRequestException('Invalid refresh token');
     }
 
-    const user = token.user;
+    const user = token.created_by;
 
     if (token.revoked) {
       throw new BadRequestException('Refresh token has been revoked');
