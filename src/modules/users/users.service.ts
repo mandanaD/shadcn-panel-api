@@ -34,6 +34,7 @@ export class UsersService {
   getUser(id: string) {
     return this.userRepo.findOne({
       where: { id },
+      relations: ['created_by'],
     });
   }
 
@@ -43,10 +44,9 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return this.userRepo.save({
-      ...body,
-      ...user,
-    });
+    Object.assign(user, body);
+
+    return this.userRepo.save(user);
   }
 
   async deleteUser(id: string) {
