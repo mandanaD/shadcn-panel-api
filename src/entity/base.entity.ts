@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { Users } from '../modules/users/users.entity';
@@ -19,11 +20,17 @@ export abstract class BaseEntity {
   updated_at: Date;
 
   @ManyToOne(() => Users, { onDelete: 'CASCADE', nullable: false })
-  @JoinColumn({ name: 'created_by' })
+  @JoinColumn({ name: '_created_by' })
   @Index()
-  created_by: Users;
+  _created_by: Users;
+
+  @RelationId((entity: BaseEntity) => entity._created_by)
+  created_by: string;
 
   @ManyToOne(() => Users, { onDelete: 'SET NULL', nullable: true })
-  @JoinColumn({ name: 'updated_by' })
-  updated_by: Users;
+  @JoinColumn({ name: '_updated_by' })
+  _updated_by: Users;
+
+  @RelationId((entity: BaseEntity) => entity._updated_by)
+  updated_by: string;
 }
