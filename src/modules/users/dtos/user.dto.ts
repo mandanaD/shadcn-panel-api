@@ -22,6 +22,9 @@ export class User {
   is_admin: boolean;
   @Expose()
   @ApiProperty()
+  created_by: string;
+  @Expose()
+  @ApiProperty()
   created_at: Date;
   @Expose()
   @ApiProperty()
