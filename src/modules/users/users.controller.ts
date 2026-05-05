@@ -33,6 +33,23 @@ export class UsersController {
     return this.usersService.getUsers(query);
   }
 
+  @Get('profile')
+  @ApiBearerAuth('access-token')
+  @ApiResponse({ dto: User })
+  getProfile(@CurrentUser() user: Partial<Users>) {
+    return this.usersService.getProfile(user.id || '');
+  }
+
+  @Patch('profile')
+  @ApiBearerAuth('access-token')
+  @ApiResponse({ dto: User })
+  updateProfile(
+    @Body() body: UpdateProfileDto,
+    @CurrentUser() user: Partial<Users>,
+  ) {
+    return this.usersService.updateProfile(user.id || '', body);
+  }
+
   @Get(':id')
   @ApiBearerAuth('access-token')
   @ApiResponse({ dto: User })
@@ -52,22 +69,5 @@ export class UsersController {
   @ApiResponse({ dto: User })
   deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
-  }
-
-  @Get('profile')
-  @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User })
-  getProfile(@CurrentUser() user: Partial<Users>) {
-    return this.usersService.getProfile(user.id || '');
-  }
-
-  @Patch('profile')
-  @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User })
-  updateProfile(
-    @Body() body: UpdateProfileDto,
-    @CurrentUser() user: Partial<Users>,
-  ) {
-    return this.usersService.updateProfile(user.id || '', body);
   }
 }
