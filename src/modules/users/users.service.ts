@@ -1,10 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
 import { Repository } from 'typeorm';
 import { GetUsersQueryDto } from './dtos/get-users-query.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from './dtos/create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -31,10 +37,26 @@ export class UsersService {
     return qb.getMany();
   }
 
+  async createUser(data: CreateUserDto) {
+    const userWithSameEmail = await this.userRepo.findOne({
+      where: { email: data.email },
+    });
+    if (!userWithSameEmail) {
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      const user = this.userRepo.create({
+        ...data,
+        password: hashedPassword,
+      });
+      return await this.userRepo.save(user);
+    } else {
+      throw new BadRequestException('User already exists');
+    }
+  }
+
   getUser(id: string) {
     return this.userRepo.findOne({
       where: { id },
-      relations: ['created_by'],
+      relations: ['_created_by'],
     });
   }
 
