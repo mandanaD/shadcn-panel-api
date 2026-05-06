@@ -8,6 +8,7 @@ import { LoginDto } from './dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshToken } from './refresh-token.entity';
 import { randomUUID } from 'crypto';
+import { UsersService } from '../users/users.service';
 
 export type payloadType = {
   sub: string;
@@ -22,6 +23,7 @@ export class AuthService {
     @InjectRepository(Users) private userRepo: Repository<Users>,
     @InjectRepository(RefreshToken) private authRepo: Repository<RefreshToken>,
     private jwtService: JwtService,
+    private usersService: UsersService,
   ) {}
 
   async generateTokens(user: Users) {
@@ -46,8 +48,8 @@ export class AuthService {
 
     await this.authRepo.save({
       id: tokenId,
-      created_by: user,
       token: hashed,
+      _created_by: user,
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
@@ -55,19 +57,9 @@ export class AuthService {
   }
 
   async signup(signupDto: SignupDto) {
-    const userWithSameEmail = await this.userRepo.findOne({
-      where: { email: signupDto.email },
-    });
-    if (!userWithSameEmail) {
-      const hashedPassword = await bcrypt.hash(signupDto.password, 10);
-      const user = this.userRepo.create({
-        ...signupDto,
-        password: hashedPassword,
-      });
-      const savedUser = await this.userRepo.save(user);
-
+    const savedUser = await this.usersService.createUser(signupDto);
+    if (savedUser && typeof savedUser === typeof Users) {
       const tokens = await this.generateTokens(savedUser);
-
       return {
         ...tokens,
         user: {
@@ -78,8 +70,6 @@ export class AuthService {
           is_admin: savedUser.is_admin,
         },
       };
-    } else {
-      throw new BadRequestException('User already exists');
     }
   }
 
@@ -128,14 +118,14 @@ export class AuthService {
       where: {
         id: decodeToken.token_id,
       },
-      relations: ['created_by'],
+      relations: ['_created_by'],
     });
 
     if (!token) {
       throw new BadRequestException('Invalid refresh token');
     }
 
-    const user = token.created_by;
+    const user = token._created_by;
 
     if (token.revoked) {
       throw new BadRequestException('Refresh token has been revoked');
