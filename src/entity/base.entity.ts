@@ -20,7 +20,7 @@ export abstract class BaseEntity {
   updated_at: Date;
 
   @ManyToOne(() => Users, { onDelete: 'CASCADE', nullable: false })
-  @JoinColumn({ name: '_created_by' })
+  @JoinColumn({ name: 'created_by' })
   @Index()
   _created_by: Users;
 
@@ -28,7 +28,7 @@ export abstract class BaseEntity {
   created_by: string;
 
   @ManyToOne(() => Users, { onDelete: 'SET NULL', nullable: true })
-  @JoinColumn({ name: '_updated_by' })
+  @JoinColumn({ name: 'updated_by' })
   _updated_by: Users;
 
   @RelationId((entity: BaseEntity) => entity._updated_by)
