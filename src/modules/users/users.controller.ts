@@ -23,6 +23,7 @@ import { Serialize } from '../../interceptors/serialize.interceptor';
 import { User } from './dtos/user.dto';
 import { ApiResponse } from '../../decorator/api-response.decorator';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { Admin } from '../../decorator/admin.decorator';
 
 @Controller('users')
 @Serialize(User)
@@ -30,6 +31,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('')
+  @Admin()
   @ApiBearerAuth('access-token')
   @ApiResponse({ dto: User, isArray: true })
   getUsers(@Query() query: GetUsersQueryDto) {
@@ -37,6 +39,7 @@ export class UsersController {
   }
 
   @Post('')
+  @Admin()
   @ApiBearerAuth('access-token')
   @ApiResponse({ dto: User })
   createUser(@Body() body: CreateUserDto) {
@@ -61,6 +64,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Admin()
   @ApiBearerAuth('access-token')
   @ApiResponse({ dto: User })
   getUser(@Param('id') id: string) {
@@ -68,6 +72,7 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @Admin()
   @ApiBearerAuth('access-token')
   @ApiResponse({ dto: User })
   updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
@@ -75,6 +80,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Admin()
   @ApiBearerAuth('access-token')
   @ApiGoneResponse({ type: User })
   deleteUser(@Param('id') id: string) {
