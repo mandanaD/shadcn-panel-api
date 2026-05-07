@@ -8,6 +8,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtGuard } from './modules/auth/jwt/jwt.guard';
 import { AuditSubscriber } from './audit/audit.user-subscriber';
 import { AuditInterceptor } from './audit/audit.interceptor';
+import { AddressModule } from './modules/address/address.module';
 
 @Module({
   providers: [
@@ -36,6 +37,7 @@ import { AuditInterceptor } from './audit/audit.interceptor';
       autoLoadEntities: true,
     }),
     TicketModule,
+    AddressModule,
   ],
 })
 export class AppModule {}
