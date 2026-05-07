@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseUserDto } from './base-user.dto';
 
@@ -12,4 +12,14 @@ export class CreateUserDto extends BaseUserDto {
   @IsString()
   @ApiProperty()
   bio?: string;
+
+  @IsUUID()
+  @IsOptional()
+  @ApiProperty()
+  state_id?: string;
+
+  @IsUUID()
+  @IsOptional()
+  @ApiProperty()
+  city_id?: string;
 }
