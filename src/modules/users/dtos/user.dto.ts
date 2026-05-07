@@ -5,27 +5,47 @@ export class User {
   @Expose()
   @ApiProperty()
   id: string;
+
   @Expose()
   @ApiProperty()
   first_name: string;
+
   @Expose()
   @ApiProperty()
   last_name: string;
+
   @Expose()
   @ApiProperty()
   email: string;
+
   @Expose()
   @ApiProperty()
   bio: string;
+
+  @Expose()
+  @ApiProperty()
+  state_id: string;
+
+  @Expose()
+  @ApiProperty()
+  city_id: string;
+
   @Expose()
   @ApiProperty()
   is_admin: boolean;
+
   @Expose()
   @ApiProperty()
   created_by: string;
+
+  @Expose()
+  @ApiProperty()
+  updated_by: string;
+
   @Expose()
   @ApiProperty()
   created_at: Date;
+
   @Expose()
   @ApiProperty()
   updated_at: Date;
