@@ -5,23 +5,26 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Users } from './users.entity';
-import { JwtGuard } from '../auth/jwt/jwt.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiGoneResponse,
+} from '@nestjs/swagger';
 import { GetUsersQueryDto } from './dtos/get-users-query.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { User } from './dtos/user.dto';
 import { ApiResponse } from '../../decorator/api-response.decorator';
+import { CreateUserDto } from './dtos/create-user.dto';
 
 @Controller('users')
-@UseGuards(JwtGuard)
 @Serialize(User)
 export class UsersController {
   constructor(private usersService: UsersService) {}
@@ -33,6 +36,13 @@ export class UsersController {
     return this.usersService.getUsers(query);
   }
 
+  @Post('')
+  @ApiBearerAuth('access-token')
+  @ApiResponse({ dto: User })
+  createUser(@Body() body: CreateUserDto) {
+    return this.usersService.createUser(body);
+  }
+
   @Get('profile')
   @ApiBearerAuth('access-token')
   @ApiResponse({ dto: User })
@@ -42,7 +52,7 @@ export class UsersController {
 
   @Patch('profile')
   @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User })
+  @ApiCreatedResponse({ type: User })
   updateProfile(
     @Body() body: UpdateProfileDto,
     @CurrentUser() user: Partial<Users>,
@@ -66,7 +76,7 @@ export class UsersController {
 
   @Delete(':id')
   @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User })
+  @ApiGoneResponse({ type: User })
   deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
   }
