@@ -11,10 +11,14 @@ import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { AddressService } from '../address/address.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(Users) private userRepo: Repository<Users>) {}
+  constructor(
+    @InjectRepository(Users) private userRepo: Repository<Users>,
+    private addressService: AddressService,
+  ) {}
 
   getUsers(query: GetUsersQueryDto) {
     const qb = this.userRepo.createQueryBuilder('user');
@@ -43,6 +47,10 @@ export class UsersService {
     });
     if (!userWithSameEmail) {
       const hashedPassword = await bcrypt.hash(data.password, 10);
+      if (data?.state_id || data?.city_id) {
+        const finalVal = await this.addressService.checkAddress(data);
+        Object.assign(data, finalVal);
+      }
       const user = this.userRepo.create({
         ...data,
         password: hashedPassword,
@@ -67,7 +75,10 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     Object.assign(user, body);
-
+    if (body?.state_id || body?.city_id) {
+      const data = await this.addressService.checkAddress(body);
+      Object.assign(user, data);
+    }
     return this.userRepo.save(user);
   }
 
@@ -100,9 +111,17 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return this.userRepo.save({
+    let finalResult = {
       ...user,
       ...body,
-    });
+    };
+    if (body?.state_id || body?.city_id) {
+      const data = await this.addressService.checkAddress(body);
+      finalResult = {
+        ...finalResult,
+        ...data,
+      };
+    }
+    return this.userRepo.save(finalResult);
   }
 }
