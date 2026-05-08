@@ -2,12 +2,15 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_ADMIN_KEY } from '../decorator/admin.decorator';
-import { AuditContext } from '../audit/audit.context';
 import { UsersService } from '../modules/users/users.service';
+import { RequestWithUser } from '../modules/users/decorators/current-user.decorator';
 
+@Injectable()
 export class IsAdminGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
@@ -21,12 +24,14 @@ export class IsAdminGuard implements CanActivate {
 
     if (!isAdmin) return true;
 
-    const ctx = AuditContext.getStore();
-    if (!ctx?.userId) {
-      throw new ForbiddenException('User not found.');
+    const req = context.switchToHttp().getRequest<RequestWithUser>();
+    const reqUser = req.user;
+
+    if (!reqUser?.id) {
+      throw new UnauthorizedException('User not found.');
     }
 
-    const user = await this.userService.getUser(ctx.userId);
+    const user = await this.userService.getUser(reqUser.id);
 
     if (!user || !user.is_admin) {
       throw new ForbiddenException(
