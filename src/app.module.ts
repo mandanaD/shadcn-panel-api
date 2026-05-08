@@ -9,6 +9,12 @@ import { JwtGuard } from './modules/auth/jwt/jwt.guard';
 import { AuditSubscriber } from './audit/audit.user-subscriber';
 import { AuditInterceptor } from './audit/audit.interceptor';
 import { AddressModule } from './modules/address/address.module';
+import { IsAdminGuard } from './guard/is-admin.guard';
+import { Message } from './modules/ticket/entity/message.entity';
+import { Ticket } from './modules/ticket/entity/ticket.entity';
+import { City } from './modules/address/entity/city.entity';
+import { State } from './modules/address/entity/state.entity';
+import { RefreshToken } from './modules/auth/refresh-token.entity';
 
 @Module({
   providers: [
@@ -16,6 +22,10 @@ import { AddressModule } from './modules/address/address.module';
     {
       provide: APP_GUARD,
       useClass: JwtGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: IsAdminGuard,
     },
     {
       provide: APP_INTERCEPTOR,
@@ -28,7 +38,7 @@ import { AddressModule } from './modules/address/address.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       database: 'shadcn_panel_db',
-      entities: [Users],
+      entities: [Users, Message, Ticket, City, State, RefreshToken],
       synchronize: true,
       host: 'localhost',
       port: 5432,
