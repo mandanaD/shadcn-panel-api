@@ -17,3 +17,17 @@ export class AuditInterceptor implements NestInterceptor {
     return AuditContext.run({ userId }, () => next.handle());
   }
 }
+
+// the context build in interceptor or middleware so guard has no access to it!
+
+// Middleware
+// ↓
+// Guards
+// ↓
+// Interceptors
+// ↓
+// Pipes
+// ↓
+// Controller
+// ↓
+// Service
