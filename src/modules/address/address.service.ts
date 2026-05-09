@@ -4,6 +4,8 @@ import { State } from './entity/state.entity';
 import { Repository } from 'typeorm';
 import { City } from './entity/city.entity';
 import { Users } from '../users/users.entity';
+import { CpStateDto } from './dtos/cp-state.dto';
+import { CPCityDto } from './dtos/cp-city.dto';
 
 @Injectable()
 export class AddressService {
@@ -42,7 +44,95 @@ export class AddressService {
     return this.stateRepository.find();
   }
 
+  createState(body: CpStateDto) {
+    const state = this.stateRepository.create(body);
+    return this.stateRepository.save(state);
+  }
+
+  async getState(id: string) {
+    const state = await this.stateRepository.findOne({
+      where: { id },
+    });
+
+    if (!state) {
+      throw new NotFoundException('State not found');
+    }
+
+    return state;
+  }
+
+  async editState(id: string, body: CpStateDto) {
+    const state = await this.getState(id);
+    if (state) {
+      return this.stateRepository.save({
+        ...state,
+        ...body,
+      });
+    }
+  }
+
+  async deleteState(id: string) {
+    const state = await this.stateRepository.findOne({ where: { id } });
+
+    if (!state) {
+      throw new NotFoundException('State not found');
+    }
+
+    await this.stateRepository.remove(state);
+
+    return null;
+  }
+
   getCities() {
     return this.cityRepository.find();
+  }
+
+  async createCity(body: CPCityDto) {
+    const state = await this.getState(body.state);
+
+    if (state) {
+      const finalBody = {
+        ...body,
+        state,
+      };
+      const city = this.cityRepository.create(finalBody);
+      return this.cityRepository.save(city);
+    }
+  }
+
+  async getCity(id: string) {
+    const state = await this.cityRepository.findOne({
+      where: { id },
+    });
+
+    if (!state) {
+      throw new NotFoundException('City not found');
+    }
+
+    return state;
+  }
+
+  async editCity(id: string, body: CPCityDto) {
+    const city = await this.getCity(id);
+    const state = await this.getState(body.state);
+
+    if (city && state) {
+      return this.cityRepository.save({
+        ...city,
+        state,
+      });
+    }
+  }
+
+  async deleteCity(id: string) {
+    const city = await this.cityRepository.findOne({ where: { id } });
+
+    if (!city) {
+      throw new NotFoundException('City not found');
+    }
+
+    await this.cityRepository.remove(city);
+
+    return null;
   }
 }
