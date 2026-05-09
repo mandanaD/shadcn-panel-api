@@ -28,7 +28,7 @@ export class IsAdminGuard implements CanActivate {
     const reqUser = req.user;
 
     if (!reqUser?.id) {
-      throw new UnauthorizedException('User not found.');
+      throw new UnauthorizedException();
     }
 
     const user = await this.userService.getUser(reqUser.id);
