@@ -11,7 +11,7 @@ import { State } from './state.entity';
 
 @Entity()
 export class City extends BaseEntity {
-  @Column()
+  @Column({ unique: true })
   label: string;
 
   @ManyToOne(() => State, { onDelete: 'CASCADE' })
