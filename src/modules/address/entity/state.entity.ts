@@ -4,7 +4,7 @@ import { City } from './city.entity';
 
 @Entity()
 export class State extends BaseEntity {
-  @Column()
+  @Column({ unique: true })
   label: string;
 
   @OneToMany(() => City, (city: City) => city.state, {
