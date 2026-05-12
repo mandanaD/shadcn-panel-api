@@ -52,13 +52,13 @@ export class TicketController {
     return this.ticketService.deleteTicket(id);
   }
 
-  @Get('messages')
+  @Get(':id/messages')
   @ApiBearerAuth('access-token')
   getTicketMessages(@Param('id') id: string) {
     return this.ticketService.getTicketMessages(id);
   }
 
-  @Post('')
+  @Post('messages')
   @ApiBearerAuth('access-token')
   createMessage(@Param('id') id: string, @Body() body: CPMessageDto) {
     return this.ticketService.createMessage(id, body);
