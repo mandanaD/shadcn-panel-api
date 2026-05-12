@@ -1,10 +1,19 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { Users } from '../users/users.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateTicketDto } from './dtos/update-ticket.dto';
+import { CPMessageDto } from './dtos/cp-message.dto';
 
 @Controller('ticket')
 export class TicketController {
@@ -25,12 +34,6 @@ export class TicketController {
     return this.ticketService.createTicket(ticket, user);
   }
 
-  @Get('messages')
-  @ApiBearerAuth('access-token')
-  getTicketMessages(@Param('id') id: string) {
-    return this.ticketService.getTicketMessages(id);
-  }
-
   @Patch(':id')
   @ApiBearerAuth('access-token')
   updateTicket(@Param('id') id: string, @Body() ticket: UpdateTicketDto) {
@@ -41,5 +44,41 @@ export class TicketController {
   @ApiBearerAuth('access-token')
   getTicket(@Param('id') id: string) {
     return this.ticketService.getTicket(id);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth('access-token')
+  deleteTicket(@Param('id') id: string) {
+    return this.ticketService.deleteTicket(id);
+  }
+
+  @Get('messages')
+  @ApiBearerAuth('access-token')
+  getTicketMessages(@Param('id') id: string) {
+    return this.ticketService.getTicketMessages(id);
+  }
+
+  @Post('')
+  @ApiBearerAuth('access-token')
+  createMessage(@Param('id') id: string, @Body() body: CPMessageDto) {
+    return this.ticketService.createMessage(id, body);
+  }
+
+  @Patch('messages/:id')
+  @ApiBearerAuth('access-token')
+  updateMessage(@Param('id') id: string, @Body() body: CPMessageDto) {
+    return this.ticketService.updateMessage(id, body);
+  }
+
+  @Get('messages/:id')
+  @ApiBearerAuth('access-token')
+  getMessage(@Param('id') id: string) {
+    return this.ticketService.getMessage(id);
+  }
+
+  @Delete('messages/:id')
+  @ApiBearerAuth('access-token')
+  deleteMessage(@Param('id') id: string) {
+    return this.ticketService.deleteMessage(id);
   }
 }
