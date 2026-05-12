@@ -15,40 +15,40 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiGoneResponse,
+  ApiOkResponse,
 } from '@nestjs/swagger';
-import { GetUsersQueryDto } from './dtos/get-users-query.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
-import { Serialize } from '../../interceptors/serialize.interceptor';
 import { User } from './dtos/user.dto';
-import { ApiResponse } from '../../decorator/api-response.decorator';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { Admin } from '../../decorator/admin.decorator';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
+import { ApiPagination } from '../../decorator/api-pagination.decorator';
 
 @Controller('users')
-@Serialize(User)
+// @Serialize(User)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('')
   @Admin()
   @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User, isArray: true })
-  getUsers(@Query() query: GetUsersQueryDto) {
+  @ApiPagination(User)
+  getUsers(@Query() query: PaginationDto) {
     return this.usersService.getUsers(query);
   }
 
   @Post('')
   @Admin()
   @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User })
+  @ApiCreatedResponse({ type: User })
   createUser(@Body() body: CreateUserDto) {
     return this.usersService.createUser(body);
   }
 
   @Get('profile')
   @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User })
+  @ApiOkResponse({ type: User })
   getProfile(@CurrentUser() user: Partial<Users>) {
     return this.usersService.getProfile(user.id || '');
   }
@@ -66,7 +66,7 @@ export class UsersController {
   @Get(':id')
   @Admin()
   @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User })
+  @ApiOkResponse({ type: User })
   getUser(@Param('id') id: string) {
     return this.usersService.getUser(id);
   }
@@ -74,7 +74,7 @@ export class UsersController {
   @Patch(':id')
   @Admin()
   @ApiBearerAuth('access-token')
-  @ApiResponse({ dto: User })
+  @ApiOkResponse({ type: User })
   updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
     return this.usersService.updateUser(id, body);
   }
