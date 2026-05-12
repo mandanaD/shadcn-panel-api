@@ -6,12 +6,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
 import { Repository } from 'typeorm';
-import { GetUsersQueryDto } from './dtos/get-users-query.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { AddressService } from '../address/address.service';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
+import { Paginate } from '../../common/pagination/utils/paginate';
 
 @Injectable()
 export class UsersService {
@@ -20,25 +21,14 @@ export class UsersService {
     private addressService: AddressService,
   ) {}
 
-  getUsers(query: GetUsersQueryDto) {
-    const qb = this.userRepo.createQueryBuilder('user');
+  getUsers(paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
+    const query = this.userRepo.createQueryBuilder('user');
 
-    if (query.search) {
-      qb.where(
-        '(user.first_name ILIKE :search OR user.last_name ILIKE :search OR user.email ILIKE :search)',
-        { search: `%${query.search}%` },
-      );
-    }
-
-    if (query.ordering) {
-      const order = query.ordering.startsWith('-') ? 'DESC' : 'ASC';
-      const field = query.ordering.replace('-', '');
-
-      if (field === 'created_at') {
-        qb.orderBy(`user.${field}`, order);
-      }
-    }
-    return qb.getMany();
+    return Paginate(query, {
+      page,
+      limit,
+    });
   }
 
   async createUser(data: CreateUserDto) {
