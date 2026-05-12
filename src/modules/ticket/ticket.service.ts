@@ -6,6 +6,7 @@ import { Message } from './entity/message.entity';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
 import { Users } from '../users/users.entity';
 import { UpdateTicketDto } from './dtos/update-ticket.dto';
+import { CPMessageDto } from './dtos/cp-message.dto';
 
 @Injectable()
 export class TicketService {
@@ -23,6 +24,7 @@ export class TicketService {
     }
     throw new NotFoundException('Ticket not found');
   }
+
   async createTicket(body: CreateTicketDto, user: Partial<Users>) {
     const ticketBody = this.ticketRepo.create({
       ...body,
@@ -62,5 +64,56 @@ export class TicketService {
         where: { ticket_id: ticket.id },
       });
     }
+  }
+
+  async deleteTicket(id: string) {
+    const ticket = await this.getTicket(id);
+    if (ticket) {
+      await this.ticketRepo.remove(ticket);
+    }
+    return null;
+  }
+
+  async createMessage(id: string, body: CPMessageDto) {
+    const ticket = await this.getTicket(id);
+    if (ticket) {
+      const message = this.messageRepo.create({
+        ...body,
+        ticket: ticket,
+      });
+
+      return this.messageRepo.save(message);
+    }
+  }
+
+  async getMessage(id: string) {
+    const message = await this.messageRepo.findOne({
+      where: { id },
+      relations: ['ticket'],
+    });
+    if (message) {
+      return message;
+    } else {
+      throw new NotFoundException('Message not found');
+    }
+  }
+
+  async updateMessage(id: string, body: CPMessageDto) {
+    const message = await this.getMessage(id);
+    if (message) {
+      return this.messageRepo.save({
+        ...message,
+        ...body,
+      });
+    }
+  }
+
+  async deleteMessage(id: string) {
+    const message = await this.getMessage(id);
+    if (message) {
+      await this.messageRepo.remove(message);
+    }
+
+    return null;
   }
 }
