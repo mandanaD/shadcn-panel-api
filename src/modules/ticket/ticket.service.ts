@@ -7,6 +7,8 @@ import { CreateTicketDto } from './dtos/create-ticket.dto';
 import { Users } from '../users/users.entity';
 import { UpdateTicketDto } from './dtos/update-ticket.dto';
 import { CPMessageDto } from './dtos/cp-message.dto';
+import { applyQueryOptions } from '../../common/query/utils/applyQueryOptions';
+import { QueryDto } from '../../dto/query.dto';
 
 @Injectable()
 export class TicketService {
@@ -53,8 +55,17 @@ export class TicketService {
     }
   }
 
-  getTickets() {
-    return this.ticketRepo.find();
+  getTickets(queryDto: QueryDto) {
+    const { page, limit, search, ordering } = queryDto;
+    const query = this.ticketRepo.createQueryBuilder();
+    return applyQueryOptions<Ticket>(query, {
+      search,
+      searchFields: ['subject'],
+      ordering,
+      orderFields: ['subject', 'created_at'],
+      limit,
+      page,
+    });
   }
 
   async getTicketMessages(id: string) {
