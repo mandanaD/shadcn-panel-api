@@ -1,13 +1,10 @@
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
-import type {
-  PaginationInterface,
-  PaginationOptions,
-} from '../type/pagination.interface';
+import { pagination, PaginationOptions } from '../type/query.interface';
 
 export const Paginate = async <T extends ObjectLiteral>(
   queryBuilder: SelectQueryBuilder<T>,
   options: PaginationOptions,
-): Promise<PaginationInterface<T>> => {
+): Promise<pagination<T>> => {
   const limit = options.limit || 10;
   const page = options.page || 1;
 
