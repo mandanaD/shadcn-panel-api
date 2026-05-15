@@ -11,8 +11,8 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { AddressService } from '../address/address.service';
-import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
-import { Paginate } from '../../common/pagination/utils/paginate';
+import { QueryDto } from '../../dto/query.dto';
+import { applyQueryOptions } from '../../common/query/utils/applyQueryOptions';
 
 @Injectable()
 export class UsersService {
@@ -21,13 +21,16 @@ export class UsersService {
     private addressService: AddressService,
   ) {}
 
-  getUsers(paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
-    const query = this.userRepo.createQueryBuilder('user');
-
-    return Paginate(query, {
-      page,
+  getUsers(queryDto: QueryDto) {
+    const { page, limit, search, ordering } = queryDto;
+    const query = this.userRepo.createQueryBuilder();
+    return applyQueryOptions<Users>(query, {
+      search,
+      searchFields: ['first_name', 'last_name', 'email'],
+      ordering,
+      orderFields: ['first_name', 'created_at'],
       limit,
+      page,
     });
   }
 
