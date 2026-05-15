@@ -22,11 +22,10 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { User } from './dtos/user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { Admin } from '../../decorator/admin.decorator';
-import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 import { ApiPagination } from '../../decorator/api-pagination.decorator';
+import { QueryDto } from '../../dto/query.dto';
 
 @Controller('users')
-// @Serialize(User)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -34,7 +33,7 @@ export class UsersController {
   @Admin()
   @ApiBearerAuth('access-token')
   @ApiPagination(User)
-  getUsers(@Query() query: PaginationDto) {
+  getUsers(@Query() query: QueryDto) {
     return this.usersService.getUsers(query);
   }
 
