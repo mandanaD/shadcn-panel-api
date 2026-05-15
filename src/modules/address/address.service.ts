@@ -6,6 +6,8 @@ import { City } from './entity/city.entity';
 import { Users } from '../users/users.entity';
 import { CpStateDto } from './dtos/cp-state.dto';
 import { CPCityDto } from './dtos/cp-city.dto';
+import { applyQueryOptions } from '../../common/query/utils/applyQueryOptions';
+import { QueryDto } from '../../dto/query.dto';
 
 @Injectable()
 export class AddressService {
@@ -40,8 +42,17 @@ export class AddressService {
     return updateData;
   }
 
-  getStates() {
-    return this.stateRepository.find();
+  getStates(queryDto: QueryDto) {
+    const { page, limit, search, ordering } = queryDto;
+    const query = this.stateRepository.createQueryBuilder();
+    return applyQueryOptions<State>(query, {
+      search,
+      searchFields: ['label'],
+      ordering,
+      orderFields: ['label', 'created_at'],
+      limit,
+      page,
+    });
   }
 
   createState(body: CpStateDto) {
@@ -83,8 +94,17 @@ export class AddressService {
     return null;
   }
 
-  getCities() {
-    return this.cityRepository.find();
+  getCities(queryDto: QueryDto) {
+    const { page, limit, search, ordering } = queryDto;
+    const query = this.cityRepository.createQueryBuilder();
+    return applyQueryOptions<City>(query, {
+      search,
+      searchFields: ['label'],
+      ordering,
+      orderFields: ['label', 'created_at'],
+      limit,
+      page,
+    });
   }
 
   async createCity(body: CPCityDto) {
