@@ -6,11 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { Public } from '../../decorator/public.decorator';
 import { CpStateDto } from './dtos/cp-state.dto';
 import { CPCityDto } from './dtos/cp-city.dto';
+import { QueryDto } from '../../dto/query.dto';
 
 @Controller('address')
 export class AddressController {
@@ -18,8 +20,8 @@ export class AddressController {
 
   @Get('states')
   @Public()
-  getStates() {
-    return this.addressService.getStates();
+  getStates(@Query() query: QueryDto) {
+    return this.addressService.getStates(query);
   }
 
   @Post('states')
@@ -48,8 +50,8 @@ export class AddressController {
 
   @Get('cities')
   @Public()
-  getCities() {
-    return this.addressService.getCities();
+  getCities(@Query() query: QueryDto) {
+    return this.addressService.getCities(query);
   }
 
   @Post('cities')
