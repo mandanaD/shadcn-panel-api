@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
@@ -14,6 +15,7 @@ import { Users } from '../users/users.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateTicketDto } from './dtos/update-ticket.dto';
 import { CPMessageDto } from './dtos/cp-message.dto';
+import { QueryDto } from '../../dto/query.dto';
 
 @Controller('ticket')
 export class TicketController {
@@ -21,8 +23,8 @@ export class TicketController {
 
   @Get('')
   @ApiBearerAuth('access-token')
-  getTickets() {
-    return this.ticketService.getTickets();
+  getTickets(@Query() query: QueryDto) {
+    return this.ticketService.getTickets(query);
   }
 
   @Post('')
