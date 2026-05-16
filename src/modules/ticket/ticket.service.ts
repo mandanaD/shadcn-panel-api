@@ -55,17 +55,21 @@ export class TicketService {
     }
   }
 
-  getTickets(queryDto: QueryDto) {
+  getTickets(queryDto: QueryDto, userId?: string) {
     const { page, limit, search, ordering } = queryDto;
     const query = this.ticketRepo.createQueryBuilder();
-    return applyQueryOptions<Ticket>(query, {
-      search,
-      searchFields: ['subject'],
-      ordering,
-      orderFields: ['subject', 'created_at'],
-      limit,
-      page,
-    });
+    return applyQueryOptions<Ticket>(
+      query,
+      {
+        search,
+        searchFields: ['subject'],
+        ordering,
+        orderFields: ['subject', 'created_at'],
+        limit,
+        page,
+      },
+      userId,
+    );
   }
 
   async getTicketMessages(id: string) {
