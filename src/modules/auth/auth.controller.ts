@@ -29,6 +29,7 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @Public()
   @ApiOkResponse({ type: TokenPairDto })
   refresh(@Body() refresh: RefreshDto) {
     return this.authService.refresh(refresh.refresh_token);
