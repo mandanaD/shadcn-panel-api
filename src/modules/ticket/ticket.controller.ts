@@ -23,8 +23,8 @@ export class TicketController {
 
   @Get('')
   @ApiBearerAuth('access-token')
-  getTickets(@Query() query: QueryDto) {
-    return this.ticketService.getTickets(query);
+  getTickets(@Query() query: QueryDto, @CurrentUser() user: Partial<Users>) {
+    return this.ticketService.getTickets(query, user?.is_admin ? '' : user?.id);
   }
 
   @Post('')
