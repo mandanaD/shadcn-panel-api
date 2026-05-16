@@ -7,11 +7,18 @@ import { QueryOptions } from '../type/query.interface';
 export const applyQueryOptions = <T extends ObjectLiteral>(
   query: SelectQueryBuilder<T>,
   options: QueryOptions<T>,
+  userId?: string,
 ) => {
+  if (userId) {
+    query.where('created_by = :userId', { userId });
+  }
   const where = Search<T>(options.search, options.searchFields);
-
   if (where) {
-    query.where(where);
+    if (userId) {
+      query.andWhere(where);
+    } else {
+      query.where(where);
+    }
   }
   const order = Order<T>(options.ordering, options.orderFields);
 
