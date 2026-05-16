@@ -76,7 +76,7 @@ export class TicketService {
     const ticket = await this.getTicket(id);
     if (ticket) {
       return this.messageRepo.find({
-        where: { ticket_id: ticket.id },
+        where: { ticket: { id: ticket.id } },
       });
     }
   }
