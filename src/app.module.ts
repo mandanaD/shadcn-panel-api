@@ -15,6 +15,7 @@ import { Ticket } from './modules/ticket/entity/ticket.entity';
 import { City } from './modules/address/entity/city.entity';
 import { State } from './modules/address/entity/state.entity';
 import { RefreshToken } from './modules/auth/refresh-token.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   providers: [
@@ -35,16 +36,23 @@ import { RefreshToken } from './modules/auth/refresh-token.entity';
   imports: [
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      database: 'shadcn_panel_db',
-      entities: [Users, Message, Ticket, City, State, RefreshToken],
-      synchronize: true,
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      autoLoadEntities: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.get<string>('DB_HOST'),
+        port: config.get<number>('DB_PORT'),
+        username: config.get<string>('DB_USERNAME'),
+        password: config.get<string>('DB_PASSWORD'),
+        database: config.get<string>('DB_NAME'),
+        entities: [Users, Message, Ticket, City, State, RefreshToken],
+        synchronize: true,
+        autoLoadEntities: true,
+      }),
     }),
     TicketModule,
     AddressModule,
